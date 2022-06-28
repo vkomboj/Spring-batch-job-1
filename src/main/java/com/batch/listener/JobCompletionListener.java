@@ -29,7 +29,7 @@ public class JobCompletionListener implements JobExecutionListener {
 	        		new RowMapper<User>() {
 	            @Override
 	            public User mapRow(ResultSet rs, int row) throws SQLException {
-	                return new User(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getLong(4), rs.getString(5));
+	                return new User();
 	            }
 	        });
 	        System.out.println("Number of Records:"+result.size());

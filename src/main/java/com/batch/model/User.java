@@ -10,38 +10,32 @@ import javax.persistence.Column;
 public class User {
 	
 	@Id
-	@Column(name = "userid")
+	@Column(name = "contact_id")
 	private Integer userId;
 	
-	@Column(name = "firstName")
+	@Column(name = "first_name")
 	private String firstName;
 	
-	@Column(name = "lastName")
+	@Column(name = "last_name")
 	private String lastName;
 	
+	@Column(name = "email")
+	private String email;
+	
 	@Column(name = "phone")
-	private Long phone;
+	private String phone;
 	
-	@Column(name = "mailId")
-	private String mailId;
+	@Column(name = "title")
+	private String title;
 	
-	public User() {
-		
-	}
-	public User(int id,String fn, String ln, long ph, String mail) {
-		this.userId=id;
-		this.firstName = fn;
-		this.lastName = ln;
-		this.phone = ph;
-		this.mailId = mail;
+	@Column(name = "designation")
+	private String designation;
 	
-	}
+
 	public int getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -54,28 +48,33 @@ public class User {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public long getPhone() {
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getPhone() {
 		return phone;
 	}
-	public void setPhone(long phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public String getMailId() {
-		return mailId;
+	public String getTitle() {
+		return title;
 	}
-	public void setMailId(String mailId) {
-		this.mailId = mailId;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getDesignation() {
+		return designation;
+	}
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 	
-	 @Override
-	    public String toString() {
-	        final StringBuffer sb = new StringBuffer("User{");
-	        sb.append("userId=").append(userId);
-	        sb.append(", First Name='").append(firstName).append('\'');
-	        sb.append(", Last Name='").append(lastName).append('\'');
-	        sb.append(", Phone=").append(phone);
-	        sb.append(", Mail Id='").append(mailId).append('\'');
-	        sb.append('}');
-	        return sb.toString();
-	    }
+	
 }

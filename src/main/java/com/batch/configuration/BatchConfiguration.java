@@ -1,5 +1,7 @@
 package com.batch.configuration;
 
+import java.util.List;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 
@@ -15,6 +17,7 @@ import org.springframework.batch.item.ItemWriter;
 
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 //import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 
@@ -36,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 //import com.batch.listener.JobCompletionListener;
 
 import com.batch.model.User;
+import com.batch.processor.UserItemProcessor;
+import com.batch.repository.UserRepository;
 //import com.batch.processor.UserItemProcessor;
 //import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -49,28 +54,20 @@ public class BatchConfiguration {
 	@Autowired
 	public StepBuilderFactory stepBuilderFactory;
 	
+	@Autowired
+	private UserRepository userRepository;
+	
 	@Bean
-	public Job job(JobBuilderFactory jobBuilderFactory,
-            StepBuilderFactory stepBuilderFactory,
-            ItemReader<User> itemReader,
-            ItemProcessor<User, User> itemProcessor,
-            ItemWriter<User> itemWriter
-	) {
-
-			Step step = stepBuilderFactory.get("ETL-file-load")
-						.<User, User>chunk(100)
-						.reader(itemReader)
-						.processor(itemProcessor)
-						.writer(itemWriter)
-						.build();
-
-
-			return jobBuilderFactory.get("ETL-Load")
-					.incrementer(new RunIdIncrementer())
-					.start(step)
-					.build();
+	public Job job() {
+		return jobBuilderFactory.get("readCSVFileJob").incrementer(new RunIdIncrementer()).start(step()).build();
 	}
 	
+	
+	@Bean
+	public Step step() {
+		return stepBuilderFactory.get("step").<User,User>chunk(7).reader(itemReader())
+				.processor(processor()).writer(writer()).build();
+	}
 	//Create Reader using FlatFileItemReader to define file properties
 	@Bean
     public FlatFileItemReader<User> itemReader() {
@@ -79,9 +76,9 @@ public class BatchConfiguration {
        
         // skip header
         reader.setLinesToSkip(1);
-        reader.setResource(new FileSystemResource("//hfdvvcdshdb01.vm.itg.corp.us.shldcorp.com/training/Contacts.csv"));
+        reader.setResource(new ClassPathResource("contacts.csv"));
        
-        reader.setName("CSV-Reader");
+   //     reader.setName("CSV-Reader");
         reader.setLineMapper(lineMapper());
         return reader;
         
@@ -93,8 +90,8 @@ public class BatchConfiguration {
 		
 		// tokenizer for delimited file
 		DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
-		tokenizer.setDelimiter(";");
-		tokenizer.setNames(new String[] { "userId", "firstName", "lastName", "phone", "mailId" });
+		tokenizer.setDelimiter(",");
+		tokenizer.setNames(new String[] { "userId", "firstName", "lastName", "phone", "email", "title", "designation"});
 		tokenizer.setStrict(false);
 		
 		BeanWrapperFieldSetMapper<User> mapper = new BeanWrapperFieldSetMapper<User>();
@@ -106,19 +103,26 @@ public class BatchConfiguration {
 		return lineMapper;
 	}
 	
-//    @Bean
-//	public UserItemProcessor processor() {
-//		return new UserItemProcessor();
-//	}
-//	
-//	@Bean
-//	public JdbcBatchItemWriter<User> writer(DataSource dataSource) {
-//	    return new JdbcBatchItemWriterBuilder<User>()
-//		  .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<User>())
-//		  .sql("INSERT INTO User (userId, firstName, lastName, phone, mailId) VALUES (:userId, :firstName, :lastName, :phone, :mailId)")
-//		  .dataSource(dataSource)
-//		  .build();
-//	}
+    @Bean
+	public UserItemProcessor processor() {
+		return new UserItemProcessor();
+	}
+	
+	@Bean
+	public ItemWriter<User> writer() {
+		
+		// Creating anonymous class
+		ItemWriter<User> itemWriter = new ItemWriter<User>() {
+
+			@Override
+			public void write(List<? extends User> items) throws Exception {
+				userRepository.saveAll(items);
+			}
+			
+		};
+		
+		return itemWriter;
+	}
 
 //	@Bean
 //	public DataSource dataSource() {
