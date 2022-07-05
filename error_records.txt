@@ -4,9 +4,3 @@ Contacts.csv :: 4 :: Invalid Phone Number
 Contacts.csv :: 8 :: Email cannot be null
 Contacts.csv :: 9 :: Last Name cannot be null
 Contacts.csv :: 10 :: First Name cannot be null
-Contacts.csv :: 1 :: Invalid Phone Number
-Contacts.csv :: 3 :: Invalid Phone Number
-Contacts.csv :: 4 :: Invalid Phone Number
-Contacts.csv :: 8 :: Email cannot be null
-Contacts.csv :: 9 :: Last Name cannot be null
-Contacts.csv :: 10 :: First Name cannot be null
